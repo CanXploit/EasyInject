@@ -1,0 +1,544 @@
+<Window x:Class="EasyInject.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EasyInject"
+        mc:Ignorable="d"
+        Title="EasyInject"
+        Height="680" Width="980"
+        MinHeight="560" MinWidth="800"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="CanResizeWithGrip">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+
+        <!-- Tab RadioButton style -->
+        <Style x:Key="TabButtonStyle" TargetType="RadioButton">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="FontFamily" Value="Consolas"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0,0,0,2"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Padding" Value="14,7"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="GroupName" Value="Tabs"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
+                            </Trigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsMouseOver" Value="True"/>
+                                    <Condition Property="IsChecked" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
+                            </MultiTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="{StaticResource BackgroundBrush}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="42"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="28"/>
+            </Grid.RowDefinitions>
+
+            <!-- ═══ TITLE BAR ═══ -->
+            <Border Grid.Row="0"
+                    Background="{StaticResource SurfaceBrush}"
+                    CornerRadius="8,8,0,0"
+                    MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+                <Grid Margin="12,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Width="20" Height="20" Background="{StaticResource AccentBrush}"
+                                CornerRadius="3" Margin="0,0,8,0">
+                            <TextBlock Text="⬡" Foreground="Black" FontSize="11"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="EASY" Foreground="{StaticResource AccentBrush}"
+                                   FontFamily="Consolas" FontSize="14" FontWeight="Bold"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="INJECT" Foreground="{StaticResource TextPrimaryBrush}"
+                                   FontFamily="Consolas" FontSize="14" FontWeight="Bold"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text=" v1.0" Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontFamily="Consolas" FontSize="10"
+                                   VerticalAlignment="Center" Margin="4,0,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="─" Width="32" Height="28"
+                                Background="Transparent" Foreground="{StaticResource TextSecondaryBrush}"
+                                BorderThickness="0" FontSize="14" Cursor="Hand"
+                                Click="MinimizeButton_Click"/>
+                        <Button Content="✕" Width="32" Height="28"
+                                Background="Transparent" Foreground="{StaticResource TextSecondaryBrush}"
+                                BorderThickness="0" FontSize="12" Cursor="Hand"
+                                Click="CloseButton_Click">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}"
+                                                        CornerRadius="0,6,0,0"
+                                                        Width="{TemplateBinding Width}"
+                                                        Height="{TemplateBinding Height}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="#CC3333"/>
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ═══ MAIN CONTENT ═══ -->
+            <Grid Grid.Row="1" Margin="16,12,16,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="320"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- ── LEFT: Process List ── -->
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="P R O C E S S E S"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontFamily="Consolas" FontSize="10" FontWeight="Bold"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock x:Name="ProcessCountText" Text=" [0]"
+                                       Foreground="{StaticResource AccentBrush}"
+                                       FontFamily="Consolas" FontSize="10"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Button Grid.Column="1" Content="↻  REFRESH"
+                                Style="{StaticResource GhostButtonStyle}"
+                                Click="RefreshProcesses_Click"/>
+                    </Grid>
+
+                    <TextBox Grid.Row="1" x:Name="SearchBox"
+                             Style="{StaticResource DarkTextBoxStyle}"
+                             Margin="0,0,0,8"
+                             TextChanged="SearchBox_TextChanged"/>
+
+                    <ListBox Grid.Row="2" x:Name="ProcessListBox"
+                             Style="{StaticResource ProcessListStyle}"
+                             ItemContainerStyle="{StaticResource ProcessListItemStyle}"
+                             SelectionChanged="ProcessListBox_SelectionChanged">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="60"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding PidText}"
+                                               Foreground="{StaticResource AccentBrush}"
+                                               FontFamily="Consolas" FontSize="11"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}"
+                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               FontFamily="Consolas" FontSize="12"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Grid.Column="2" Text="{Binding Architecture}"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               FontFamily="Consolas" FontSize="10"
+                                               HorizontalAlignment="Right"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <Border Grid.Row="3" Margin="0,8,0,0"
+                            Background="{StaticResource SurfaceAltBrush}"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1" CornerRadius="4" Padding="10,6">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="TARGET: " Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontFamily="Consolas" FontSize="11"/>
+                            <TextBlock x:Name="SelectedProcessText" Grid.Column="1"
+                                       Text="none selected"
+                                       Foreground="{StaticResource AccentBrush}"
+                                       FontFamily="Consolas" FontSize="11"
+                                       TextTrimming="CharacterEllipsis"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Divider -->
+                <Border Grid.Column="1" Width="1" Background="{StaticResource BorderBrush}"
+                        VerticalAlignment="Stretch" Margin="5,0"/>
+
+                <!-- ── RIGHT PANEL ── -->
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>   <!-- tabs -->
+                        <RowDefinition Height="*"/>      <!-- tab content -->
+                        <RowDefinition Height="110"/>    <!-- log -->
+                        <RowDefinition Height="Auto"/>   <!-- inject btn -->
+                    </Grid.RowDefinitions>
+
+                    <!-- ── TAB BAR ── -->
+                    <Border Grid.Row="0"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="0,0,0,1"
+                            Margin="0,0,0,12">
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton x:Name="TabDll"     Content="⬡  DLL"
+                                         Style="{StaticResource TabButtonStyle}"
+                                         IsChecked="True" Checked="Tab_Checked"/>
+                            <RadioButton x:Name="TabShellcode" Content="»  SHELLCODE"
+                                         Style="{StaticResource TabButtonStyle}"
+                                         Checked="Tab_Checked"/>
+                            <RadioButton x:Name="TabAssembly"  Content="∴  ASSEMBLY"
+                                         Style="{StaticResource TabButtonStyle}"
+                                         Checked="Tab_Checked"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- ════════════════════════════════════ -->
+                    <!--  TAB PANELS (toggle Visibility)     -->
+                    <!-- ════════════════════════════════════ -->
+                    <Grid Grid.Row="1">
+
+                        <!-- ■ DLL PANEL ■ -->
+                        <Grid x:Name="PanelDll">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="D L L   P A T H"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontFamily="Consolas" FontSize="10" FontWeight="Bold"
+                                       Margin="0,0,0,8"/>
+
+                            <Grid Grid.Row="1" Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="DllPathBox"
+                                         Style="{StaticResource DarkTextBoxStyle}"
+                                         IsReadOnly="True"
+                                         AllowDrop="True"
+                                         PreviewDragOver="DllPathBox_DragOver"
+                                         Drop="DllPathBox_Drop"/>
+                                <Button Grid.Column="2" Content="BROWSE"
+                                        Style="{StaticResource GhostButtonStyle}"
+                                        Click="BrowseDll_Click"/>
+                            </Grid>
+
+                            <Border Grid.Row="2"
+                                    Background="{StaticResource SurfaceAltBrush}"
+                                    BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="1" CornerRadius="4" Padding="10,8">
+                                <StackPanel>
+                                    <Grid Margin="0,0,0,3">
+                                        <TextBlock Text="FILE:" Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontFamily="Consolas" FontSize="10"/>
+                                        <TextBlock x:Name="DllFileNameText" Text="—"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontFamily="Consolas" FontSize="10"
+                                                   HorizontalAlignment="Right" TextTrimming="CharacterEllipsis"/>
+                                    </Grid>
+                                    <Grid Margin="0,0,0,3">
+                                        <TextBlock Text="SIZE:" Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontFamily="Consolas" FontSize="10"/>
+                                        <TextBlock x:Name="DllSizeText" Text="—"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontFamily="Consolas" FontSize="10"
+                                                   HorizontalAlignment="Right"/>
+                                    </Grid>
+                                    <Grid>
+                                        <TextBlock Text="ARCH:" Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontFamily="Consolas" FontSize="10"/>
+                                        <TextBlock x:Name="DllArchText" Text="—"
+                                                   Foreground="{StaticResource AccentGreenBrush}"
+                                                   FontFamily="Consolas" FontSize="10"
+                                                   HorizontalAlignment="Right"/>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <!-- ■ SHELLCODE PANEL ■ -->
+                        <Grid x:Name="PanelShellcode" Visibility="Collapsed">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="S H E L L C O D E"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontFamily="Consolas" FontSize="10" FontWeight="Bold"
+                                       Margin="0,0,0,8"/>
+
+                            <!-- File row -->
+                            <Grid Grid.Row="1" Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="ShellcodeFileBox"
+                                         Style="{StaticResource DarkTextBoxStyle}"
+                                         IsReadOnly="True"
+                                         AllowDrop="True"
+                                         PreviewDragOver="ShellcodeFileBox_DragOver"
+                                         Drop="ShellcodeFileBox_Drop"/>
+                                <Button Grid.Column="2" Content="FILE"
+                                        Style="{StaticResource GhostButtonStyle}"
+                                        Click="BrowseShellcodeFile_Click"/>
+                                <Button Grid.Column="4" Content="CLR"
+                                        Style="{StaticResource GhostButtonStyle}"
+                                        Click="ClearShellcode_Click"/>
+                            </Grid>
+
+                            <TextBlock Grid.Row="2" Margin="0,0,0,4"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontFamily="Consolas" FontSize="10"
+                                       Text="HEX BYTES  (e.g.  90 90 CC  or  \x90\x90\xCC)"/>
+
+                            <TextBox Grid.Row="3"
+                                     x:Name="ShellcodeHexBox"
+                                     Style="{StaticResource DarkTextBoxStyle}"
+                                     AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     VerticalScrollBarVisibility="Auto"
+                                     FontSize="12"
+                                     TextChanged="ShellcodeHexBox_TextChanged"/>
+
+                            <!-- Byte count -->
+                            <Border Grid.Row="4" Margin="0,6,0,0"
+                                    Background="{StaticResource SurfaceAltBrush}"
+                                    BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="1" CornerRadius="3" Padding="8,4">
+                                <Grid>
+                                    <TextBlock Text="BYTES:" Foreground="{StaticResource TextSecondaryBrush}"
+                                               FontFamily="Consolas" FontSize="10"/>
+                                    <TextBlock x:Name="ShellcodeBytesText" Text="0"
+                                               Foreground="{StaticResource AccentBrush}"
+                                               FontFamily="Consolas" FontSize="10"
+                                               HorizontalAlignment="Right"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <!-- ■ ASSEMBLY PANEL ■ -->
+                        <Grid x:Name="PanelAssembly" Visibility="Collapsed">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="A S S E M B L Y"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontFamily="Consolas" FontSize="10" FontWeight="Bold"
+                                       Margin="0,0,0,8"/>
+
+                            <!-- Arch + file row -->
+                            <Grid Grid.Row="1" Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="ARCH:"
+                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                           FontFamily="Consolas" FontSize="11"
+                                           VerticalAlignment="Center"/>
+                                <ComboBox Grid.Column="2" x:Name="AsmArchCombo"
+                                          FontFamily="Consolas" FontSize="11"
+                                          Background="{StaticResource SurfaceAltBrush}"
+                                          Foreground="{StaticResource TextPrimaryBrush}"
+                                          BorderBrush="{StaticResource BorderBrush}">
+                                    <ComboBoxItem Content="x64" IsSelected="True"/>
+                                    <ComboBoxItem Content="x86"/>
+                                </ComboBox>
+                                <Button Grid.Column="4" Content="LOAD FILE"
+                                        Style="{StaticResource GhostButtonStyle}"
+                                        Click="BrowseAsmFile_Click"/>
+                            </Grid>
+
+                            <TextBlock Grid.Row="2" Margin="0,0,0,4"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontFamily="Consolas" FontSize="10"
+                                       Text="NASM SYNTAX — one instruction per line, ; comments ok"/>
+
+                            <TextBox Grid.Row="3"
+                                     x:Name="AsmCodeBox"
+                                     Style="{StaticResource DarkTextBoxStyle}"
+                                     AcceptsReturn="True"
+                                     AcceptsTab="True"
+                                     TextWrapping="NoWrap"
+                                     HorizontalScrollBarVisibility="Auto"
+                                     VerticalScrollBarVisibility="Auto"
+                                     FontSize="12"
+                                     Text="; paste or type your assembly here&#x0a;nop&#x0a;nop&#x0a;ret"/>
+
+                            <!-- Assembled preview bar -->
+                            <Border Grid.Row="4" Margin="0,6,0,0"
+                                    Background="{StaticResource SurfaceAltBrush}"
+                                    BorderBrush="{StaticResource BorderBrush}"
+                                    BorderThickness="1" CornerRadius="3" Padding="8,4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="BYTES:" Foreground="{StaticResource TextSecondaryBrush}"
+                                               FontFamily="Consolas" FontSize="10"/>
+                                    <TextBlock x:Name="AsmBytesText" Grid.Column="1" Text="—"
+                                               Foreground="{StaticResource AccentBrush}"
+                                               FontFamily="Consolas" FontSize="10"
+                                               Margin="6,0,0,0" TextTrimming="CharacterEllipsis"/>
+                                    <Button Grid.Column="2"
+                                            Content="▶ ASSEMBLE"
+                                            Style="{StaticResource GhostButtonStyle}"
+                                            Padding="8,2"
+                                            Click="AssemblePreview_Click"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                    </Grid><!-- /tab content -->
+
+                    <!-- ── LOG ── -->
+                    <Border Grid.Row="2" Margin="0,10,0,0"
+                            Background="{StaticResource SurfaceAltBrush}"
+                            BorderBrush="{StaticResource BorderBrush}"
+                            BorderThickness="1" CornerRadius="4">
+                        <Grid>
+                            <TextBlock Text="L O G" Margin="8,5,0,0"
+                                       Foreground="{StaticResource TextSecondaryBrush}"
+                                       FontFamily="Consolas" FontSize="9" FontWeight="Bold"
+                                       VerticalAlignment="Top"/>
+                            <ScrollViewer x:Name="LogScrollViewer"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled"
+                                          Padding="8,22,8,6">
+                                <TextBlock x:Name="LogTextBlock"
+                                           FontFamily="Consolas" FontSize="10"
+                                           TextWrapping="Wrap"
+                                           Foreground="{StaticResource TextSecondaryBrush}"/>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+
+                    <!-- ── INJECT BUTTON ── -->
+                    <Button Grid.Row="3" Margin="0,10,0,0"
+                            x:Name="InjectButton"
+                            Content="⚡  INJECT"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            FontSize="13" Padding="0,12"
+                            IsEnabled="False"
+                            Click="InjectButton_Click"/>
+                </Grid>
+            </Grid>
+
+            <!-- ═══ STATUS BAR ═══ -->
+            <Border Grid.Row="2"
+                    Background="{StaticResource SurfaceBrush}"
+                    CornerRadius="0,0,8,8"
+                    BorderBrush="{StaticResource BorderBrush}"
+                    BorderThickness="0,1,0,0"
+                    Padding="12,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Ellipse x:Name="StatusDot" Width="7" Height="7"
+                                 Fill="{StaticResource TextSecondaryBrush}"
+                                 Margin="0,0,6,0"/>
+                        <TextBlock x:Name="StatusText" Text="Ready"
+                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                   FontFamily="Consolas" FontSize="10"/>
+                    </StackPanel>
+                    <TextBlock x:Name="StatusModeText" Grid.Column="2"
+                               Text="MODE: DLL  •  LoadLibraryA"
+                               Foreground="{StaticResource TextSecondaryBrush}"
+                               FontFamily="Consolas" FontSize="9"
+                               VerticalAlignment="Center" Opacity="0.5"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
